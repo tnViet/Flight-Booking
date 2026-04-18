@@ -1,0 +1,21 @@
+# Tránh up các file sinh ra khi chạy code
+bin/
+obj/
+out/
+target/
+build/
+
+# Tránh up cấu hình riêng của các công cụ code (IDE)
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# Các file tạm của hệ thống
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Các file nhật ký lỗi
+*.log
