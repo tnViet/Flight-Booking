@@ -55,11 +55,14 @@
                             <td style="color: var(--theme_text-weak); font-size: 0.82rem;">${b.bookingTime}</td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${b.bookingStatus == 'SUCCESS'}">
+                                    <c:when test="${b.bookingStatus == 'CONFIRMED' || b.bookingStatus == 'SUCCESS'}">
                                         <span class="badge badge-success">Thành công</span>
                                     </c:when>
-                                    <c:when test="${b.bookingStatus == 'PENDING'}">
-                                        <span class="badge badge-warning">Chờ xử lý</span>
+                                    <c:when test="${b.bookingStatus == 'PENDING_PAYMENT'}">
+                                        <span class="badge badge-warning">Chờ thanh toán</span>
+                                    </c:when>
+                                    <c:when test="${b.bookingStatus == 'PROCESSING' || b.bookingStatus == 'PENDING'}">
+                                        <span class="badge badge-blue">Đang xử lý</span>
                                     </c:when>
                                     <c:otherwise>
                                         <span class="badge badge-danger">Thất bại</span>

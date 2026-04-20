@@ -26,6 +26,12 @@ public class FlightsServlet extends HttpServlet {
             req.setAttribute("selectedDestination", destination);
             req.setAttribute("selectedDate", date);
 
+            // If no parameters are provided, just show the page without an error (first time visit)
+            if (origin == null && destination == null && date == null) {
+                req.getRequestDispatcher("/views/flights.jsp").forward(req, resp);
+                return;
+            }
+
             if (origin == null || destination == null || date == null || date.isBlank()) {
                 req.setAttribute("error", "Vui long chon diem di, diem den va ngay bay.");
                 req.getRequestDispatcher("/views/flights.jsp").forward(req, resp);

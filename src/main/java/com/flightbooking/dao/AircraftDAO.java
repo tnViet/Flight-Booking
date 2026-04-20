@@ -35,6 +35,28 @@ public class AircraftDAO {
         return null;
     }
 
+    public void insert(Aircraft aircraft) throws SQLException {
+        String sql = "INSERT INTO aircrafts(model_name, total_rows, columns_per_row, column_names, missing_seats) VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, aircraft.getModelName());
+            ps.setInt(2, aircraft.getTotalRows());
+            ps.setInt(3, aircraft.getColumnsPerRow());
+            ps.setString(4, aircraft.getColumnNames());
+            ps.setString(5, aircraft.getMissingSeats());
+            ps.executeUpdate();
+        }
+    }
+
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM aircrafts WHERE id = ?";
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+
     private Aircraft map(ResultSet rs) throws SQLException {
         Aircraft a = new Aircraft();
         a.setId(rs.getInt("id"));
@@ -42,6 +64,7 @@ public class AircraftDAO {
         a.setTotalRows(rs.getInt("total_rows"));
         a.setColumnsPerRow(rs.getInt("columns_per_row"));
         a.setColumnNames(rs.getString("column_names"));
+        a.setMissingSeats(rs.getString("missing_seats"));
         return a;
     }
 }

@@ -116,14 +116,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         <input type="date" name="birthDate" required style="padding: 6px; font-size: 0.85rem;" />
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label style="font-size: 0.75rem;">Căn cước công dân</label>
-                        <input name="idCard" placeholder="Số CCCD" required style="padding: 6px; font-size: 0.85rem;" />
+                        <label style="font-size: 0.75rem;">Căn cước công dân (12 số)</label>
+                        <input name="idCard" placeholder="Số CCCD" required maxlength="12" pattern="\\d{12}" title="CCCD phải bao gồm đúng 12 chữ số" style="padding: 6px; font-size: 0.85rem;" />
                     </div>
                 </div>
                 <div class="form-row" style="margin-bottom: 10px; gap: 10px;">
                     <div class="form-group" style="flex: 1;">
-                        <label style="font-size: 0.75rem;">Số điện thoại</label>
-                        <input name="phone" placeholder="SĐT" required style="padding: 6px; font-size: 0.85rem;" />
+                        <label style="font-size: 0.75rem;">Số điện thoại (10 số)</label>
+                        <input name="phone" placeholder="SĐT" required maxlength="10" pattern="\\d{10}" title="Số điện thoại phải bao gồm đúng 10 chữ số" style="padding: 6px; font-size: 0.85rem;" />
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label style="font-size: 0.75rem;">Gmail</label>
@@ -163,6 +163,28 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!name.value.trim()) {
                 alert("Vui lòng điền đầy đủ họ tên hành khách.");
                 name.focus();
+                return;
+            }
+        }
+
+        // Validate SĐT (10 digits)
+        const phones = document.querySelectorAll('input[name="phone"]');
+        for (let phone of phones) {
+            const val = phone.value.trim();
+            if (!/^\d{10}$/.test(val)) {
+                alert("Số điện thoại phải bao gồm đúng 10 chữ số.");
+                phone.focus();
+                return;
+            }
+        }
+
+        // Validate CCCD (12 digits)
+        const idCards = document.querySelectorAll('input[name="idCard"]');
+        for (let idCard of idCards) {
+            const val = idCard.value.trim();
+            if (!/^\d{12}$/.test(val)) {
+                alert("Căn cước công dân phải bao gồm đúng 12 chữ số.");
+                idCard.focus();
                 return;
             }
         }

@@ -46,7 +46,7 @@
                 </div>
                 <div class="form-group">
                     <label><i class="far fa-calendar-alt"></i> Ngày bay</label>
-                    <input type="date" name="date" required>
+                    <input class="flatpickr" name="date" required placeholder="Chọn ngày bay">
                 </div>
                 <div style="align-self: flex-end;">
                     <button type="submit" class="search-btn" style="padding: 10px 28px; height: 42px;">
@@ -59,46 +59,140 @@
 </div>
 
 <!-- Deals Section -->
-<h2 class="section-title">Chuyến bay giá tốt</h2>
-<div class="flights-grid">
-    <c:forEach items="${deals}" var="f">
-        <div class="flight-card">
-            <div class="flight-header">
-                <span class="route">
-                    ${f.origin} <i class="fas fa-long-arrow-alt-right"></i> ${f.destination}
-                </span>
-                <span class="flight-number">${f.flightNo}</span>
-            </div>
-            <div class="flight-body">
-                <div class="flight-info">
-                    <div class="time-box">
-                        <div class="time">${f.departureTimeDisplay}</div>
-                        <div class="city">${f.origin}</div>
+<div class="section-container" style="position: relative; padding: 0 48px 48px;">
+    <h2 class="section-title">Chuyến bay giá tốt</h2>
+    
+    <div class="carousel-container" style="position: relative; overflow: hidden;">
+        <button id="prevBtn" class="carousel-nav" style="left: 0;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <div class="flights-grid carousel-track" id="carouselTrack" style="display: flex; transition: transform 0.4s ease; gap: 24px; width: fit-content;">
+            <c:forEach items="${deals}" var="f">
+                <div class="flight-card" style="flex: 0 0 calc((100% / 3) - 16px); min-width: 300px;">
+                    <div class="flight-header">
+                        <span class="route">
+                            ${f.origin} <i class="fas fa-long-arrow-alt-right"></i> ${f.destination}
+                        </span>
+                        <span class="flight-number">${f.flightNo}</span>
                     </div>
-                    <div class="flight-info-divider">
-                        <div class="flight-info-line"></div>
-                        <i class="fas fa-plane"></i>
-                        <div class="flight-info-line"></div>
-                    </div>
-                    <div class="time-box" style="text-align: right;">
-                        <div class="time">${f.arrivalTimeDisplay}</div>
-                        <div class="city">${f.destination}</div>
-                    </div>
-                </div>
-                <div class="price-box">
-                    <div>
-                        <div class="label">Giá chỉ từ</div>
-                        <div class="value">
-                            <fmt:formatNumber value="${f.basePrice}" type="currency" currencySymbol="₫" />
+                    <div class="flight-body">
+                        <div class="flight-info">
+                            <div class="time-box">
+                                <div class="time">${f.departureTimeDisplay}</div>
+                                <div class="city">${f.origin}</div>
+                            </div>
+                            <div class="flight-info-divider">
+                                <div class="flight-info-line"></div>
+                                <i class="fas fa-plane"></i>
+                                <div class="flight-info-line"></div>
+                            </div>
+                            <div class="time-box" style="text-align: right;">
+                                <div class="time">${f.arrivalTimeDisplay}</div>
+                                <div class="city">${f.destination}</div>
+                            </div>
+                        </div>
+                        <div class="price-box">
+                            <div>
+                                <div class="label">Giá chỉ từ</div>
+                                <div class="value">
+                                    <fmt:formatNumber value="${f.basePrice}" type="currency" currencySymbol="₫" />
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <a href="${pageContext.request.contextPath}/booking?flightId=${f.id}" class="book-btn">
+                        Đặt ngay <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-            </div>
-            <a href="${pageContext.request.contextPath}/booking?flightId=${f.id}" class="book-btn">
-                Đặt ngay <i class="fas fa-arrow-right"></i>
-            </a>
+            </c:forEach>
         </div>
-    </c:forEach>
+        
+        <button id="nextBtn" class="carousel-nav" style="right: 0;">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
 </div>
+
+<style>
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--theme_border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme_blue);
+    transition: all 0.2s;
+}
+.carousel-nav:hover {
+    background: var(--theme_blue);
+    color: white;
+    border-color: var(--theme_blue);
+}
+.carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('carouselTrack');
+    const cards = track.querySelectorAll('.flight-card');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    let currentIndex = 0;
+    const cardsToShow = 3;
+    const totalCards = cards.length;
+    
+    function updateCarousel() {
+        const cardWidth = cards[0].offsetWidth + 24; // Width + gap
+        track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= totalCards - cardsToShow;
+    }
+    
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < totalCards - cardsToShow) {
+            currentIndex++;
+            updateCarousel();
+        }
+    });
+    
+    // Initial state
+    updateCarousel();
+    
+    // Handle resize
+    window.addEventListener('resize', updateCarousel);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr(".flatpickr", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        allowInput: true,
+        minDate: "today"
+    });
+});
+</script>
 
 <%@ include file="common/footer.jspf" %>

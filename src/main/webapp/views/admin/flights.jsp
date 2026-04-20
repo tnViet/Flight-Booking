@@ -15,13 +15,21 @@
 
 <div class="table-container">
 
+    <c:if test="${not empty sessionScope.error}">
+        <div class="alert alert-danger" style="margin-bottom: 20px; background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>${sessionScope.error}</span>
+            <c:remove var="error" scope="session" />
+        </div>
+    </c:if>
+
     <!-- Add Flight Form -->
     <div class="card" style="margin-bottom: 28px;">
         <div class="card-header">
             <h3><i class="fas fa-plus-circle" style="color:var(--theme_blue); margin-right:8px;"></i>Thêm chuyến bay mới</h3>
         </div>
         <div class="card-body">
-            <form method="post" action="${pageContext.request.contextPath}/admin/flights">
+            <form id="flightForm" method="post" action="${pageContext.request.contextPath}/admin/flights" onsubmit="return validateTimes()">
                 <input type="hidden" name="action" value="create">
                 <div class="form-row" style="margin-bottom: 16px;">
                     <div class="form-group">
@@ -40,11 +48,11 @@
                 <div class="form-row" style="margin-bottom: 20px;">
                     <div class="form-group">
                         <label>Thời gian khởi hành</label>
-                        <input name="departureTime" type="datetime-local" required>
+                        <input name="departureTime" class="flatpickr" placeholder="Chọn thời gian" required>
                     </div>
                     <div class="form-group">
                         <label>Thời gian hạ cánh</label>
-                        <input name="arrivalTime" type="datetime-local" required>
+                        <input name="arrivalTime" class="flatpickr" placeholder="Chọn thời gian" required>
                     </div>
                     <div class="form-group">
                         <label>Giá cơ bản (VND)</label>
@@ -52,17 +60,14 @@
                     </div>
                     <div class="form-group">
                         <label>Máy bay</label>
-                        <select name="aircraftId" required>
+                        <select name="aircraftId" required onchange="updateTotalSeats(this)">
                             <option value="">-- Chọn máy bay --</option>
                             <c:forEach var="a" items="${aircrafts}">
-                                <option value="${a.id}">${a.modelName} (${a.totalRows * a.columnsPerRow} ghế)</option>
+                                <option value="${a.id}" data-seats="${a.totalRows * a.columnsPerRow}">${a.modelName} (${a.totalRows * a.columnsPerRow} ghế)</option>
                             </c:forEach>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Tổng số ghế</label>
-                        <input name="totalSeats" type="number" placeholder="180" required>
-                    </div>
+                    <input type="hidden" name="totalSeats" id="totalSeatsInput">
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
                     <button type="submit" class="search-btn">
@@ -142,5 +147,35 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr(".flatpickr", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        altInput: true,
+        altFormat: "d/m/Y H:i",
+        allowInput: true
+    });
+});
+
+function updateTotalSeats(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const seats = selectedOption.getAttribute('data-seats');
+    document.getElementById('totalSeatsInput').value = seats || 0;
+}
+
+function validateTimes() {
+    const depTime = new Date(document.getElementsByName('departureTime')[0].value);
+    const arrTime = new Date(document.getElementsByName('arrivalTime')[0].value);
+    
+    if (arrTime <= depTime) {
+        alert('Thời gian hạ cánh phải sau thời gian khởi hành!');
+        return false;
+    }
+    return true;
+}
+</script>
 
 <%@ include file="../common/footer.jspf" %>

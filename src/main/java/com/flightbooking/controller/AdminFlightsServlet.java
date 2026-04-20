@@ -50,8 +50,17 @@ public class AdminFlightsServlet extends HttpServlet {
                 f.setFlightNo(req.getParameter("flightNo"));
                 f.setOrigin(req.getParameter("origin"));
                 f.setDestination(req.getParameter("destination"));
-                f.setDepartureTime(LocalDateTime.parse(req.getParameter("departureTime")));
-                f.setArrivalTime(LocalDateTime.parse(req.getParameter("arrivalTime")));
+                LocalDateTime departureTime = LocalDateTime.parse(req.getParameter("departureTime"));
+                LocalDateTime arrivalTime = LocalDateTime.parse(req.getParameter("arrivalTime"));
+                
+                if (arrivalTime.isBefore(departureTime) || arrivalTime.isEqual(departureTime)) {
+                    req.getSession().setAttribute("error", "Thời gian hạ cánh phải sau thời gian khởi hành!");
+                    resp.sendRedirect(req.getContextPath() + "/admin/flights");
+                    return;
+                }
+                
+                f.setDepartureTime(departureTime);
+                f.setArrivalTime(arrivalTime);
                 f.setBasePrice(Double.parseDouble(req.getParameter("basePrice")));
                 f.setTotalSeats(Integer.parseInt(req.getParameter("totalSeats")));
                 

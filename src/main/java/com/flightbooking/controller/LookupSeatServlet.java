@@ -17,16 +17,27 @@ public class LookupSeatServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String bookingCode = req.getParameter("bookingCode");
-        if (bookingCode != null && !bookingCode.isBlank()) {
-            try {
-                List<BookingItem> bookings = bookingDAO.findByBookingCode(bookingCode.trim());
+        String phone = req.getParameter("phone");
+        String idCard = req.getParameter("idCard");
+        
+        try {
+            List<BookingItem> bookings = null;
+            if (bookingCode != null && !bookingCode.isBlank()) {
+                bookings = bookingDAO.findByBookingCode(bookingCode.trim());
+            } else if (phone != null && !phone.isBlank()) {
+                bookings = bookingDAO.findByPhone(phone.trim());
+            } else if (idCard != null && !idCard.isBlank()) {
+                bookings = bookingDAO.findByIdCard(idCard.trim());
+            }
+
+            if (bookings != null) {
                 req.setAttribute("searchResults", bookings);
                 if (bookings.isEmpty()) {
-                    req.setAttribute("error", "Không tìm thấy thông tin đặt vé cho mã này.");
+                    req.setAttribute("error", "Không tìm thấy thông tin đặt vé cho yêu cầu này.");
                 }
-            } catch (Exception e) {
-                throw new ServletException(e);
             }
+        } catch (Exception e) {
+            throw new ServletException(e);
         }
         req.getRequestDispatcher("/views/lookup-seat.jsp").forward(req, resp);
     }

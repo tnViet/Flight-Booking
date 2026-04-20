@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS aircrafts (
   model_name VARCHAR(50) NOT NULL,
   total_rows INT NOT NULL,
   columns_per_row INT NOT NULL,
-  column_names VARCHAR(20) NOT NULL
+  column_names VARCHAR(20) NOT NULL,
+  missing_seats VARCHAR(255) DEFAULT '' -- New: Comma separated seat numbers that don't exist
 );
 
 -- 3. Flights Table

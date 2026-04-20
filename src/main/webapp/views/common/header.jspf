@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
 <div class="app-container">
@@ -29,6 +31,9 @@
                     </a>
                     <a href="${pageContext.request.contextPath}/admin/flights" class="nav-item">
                         <i class="fas fa-plane"></i> <span>Quản lý chuyến bay</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/aircrafts" class="nav-item">
+                        <i class="fas fa-tools"></i> <span>Quản lý máy bay</span>
                     </a>
                     <a href="${pageContext.request.contextPath}/admin/bookings" class="nav-item">
                         <i class="fas fa-list"></i> <span>Quản lý đặt chỗ</span>

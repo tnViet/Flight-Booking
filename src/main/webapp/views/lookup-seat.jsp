@@ -16,22 +16,80 @@
 <div class="table-container">
 
     <!-- Search Card -->
-    <div class="card" style="max-width: 560px; margin: 0 auto 32px;">
+    <div class="card" style="max-width: 620px; margin: 0 auto 32px;">
         <div class="card-header">
             <h3><i class="fas fa-search" style="color:var(--theme_blue); margin-right:8px;"></i>Tra cứu thông tin đặt vé</h3>
         </div>
         <div class="card-body">
-            <form method="get" action="${pageContext.request.contextPath}/lookup-seat">
+            <div class="tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--theme_border);">
+                <button onclick="switchTab('code')" id="tab-code" class="tab-btn active" style="padding: 10px 15px; background: none; border: none; border-bottom: 2px solid var(--theme_blue); color: var(--theme_blue); font-weight: 600; cursor: pointer;">Mã đặt chỗ</button>
+                <button onclick="switchTab('phone')" id="tab-phone" class="tab-btn" style="padding: 10px 15px; background: none; border: none; color: var(--theme_text-weak); font-weight: 600; cursor: pointer;">Số điện thoại</button>
+                <button onclick="switchTab('idcard')" id="tab-idcard" class="tab-btn" style="padding: 10px 15px; background: none; border: none; color: var(--theme_text-weak); font-weight: 600; cursor: pointer;">Số CCCD</button>
+            </div>
+
+            <!-- Search by Code -->
+            <form id="form-code" method="get" action="${pageContext.request.contextPath}/lookup-seat">
                 <div class="form-group" style="margin-bottom: 16px;">
                     <label>Mã đặt chỗ (Booking Code)</label>
                     <input type="text" name="bookingCode" value="${param.bookingCode}"
                            placeholder="VD: BK-1FE46B77" required
-                           style="text-transform: uppercase; letter-spacing: 1px; font-family: monospace; font-size: 1rem;">
+                           style="text-transform: uppercase; letter-spacing: 1px; font-family: monospace; font-size: 1rem; width: 100%; padding: 10px; border: 1px solid var(--theme_border); border-radius: var(--radius-sm);">
                 </div>
                 <button type="submit" class="search-btn" style="width:100%; padding: 12px; font-size: 0.95rem;">
-                    <i class="fas fa-search"></i> Tra cứu ngay
+                    <i class="fas fa-search"></i> Tra cứu bằng mã
                 </button>
             </form>
+
+            <!-- Search by Phone -->
+            <form id="form-phone" method="get" action="${pageContext.request.contextPath}/lookup-seat" style="display: none;">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label>Số điện thoại</label>
+                    <input type="text" name="phone" value="${param.phone}"
+                           placeholder="VD: 0987654321" required
+                           style="letter-spacing: 1px; font-size: 1rem; width: 100%; padding: 10px; border: 1px solid var(--theme_border); border-radius: var(--radius-sm);">
+                </div>
+                <button type="submit" class="search-btn" style="width:100%; padding: 12px; font-size: 0.95rem;">
+                    <i class="fas fa-search"></i> Tra cứu bằng SĐT
+                </button>
+            </form>
+
+            <!-- Search by ID Card -->
+            <form id="form-idcard" method="get" action="${pageContext.request.contextPath}/lookup-seat" style="display: none;">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label>Số CCCD</label>
+                    <input type="text" name="idCard" value="${param.idCard}"
+                           placeholder="VD: 001203004567" required
+                           style="letter-spacing: 1px; font-size: 1rem; width: 100%; padding: 10px; border: 1px solid var(--theme_border); border-radius: var(--radius-sm);">
+                </div>
+                <button type="submit" class="search-btn" style="width:100%; padding: 12px; font-size: 0.95rem;">
+                    <i class="fas fa-search"></i> Tra cứu bằng CCCD
+                </button>
+            </form>
+
+            <script>
+                function switchTab(type) {
+                    const tabs = ['code', 'phone', 'idcard'];
+                    tabs.forEach(t => {
+                        document.getElementById('form-' + t).style.display = t === type ? 'block' : 'none';
+                        const btn = document.getElementById('tab-' + t);
+                        if (t === type) {
+                            btn.style.borderBottom = '2px solid var(--theme_blue)';
+                            btn.style.color = 'var(--theme_blue)';
+                            btn.classList.add('active');
+                        } else {
+                            btn.style.borderBottom = 'none';
+                            btn.style.color = 'var(--theme_text-weak)';
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+                
+                // Keep the current tab active after redirect
+                window.onload = function() {
+                    if ("${not empty param.phone}" === "true") switchTab('phone');
+                    else if ("${not empty param.idCard}" === "true") switchTab('idcard');
+                }
+            </script>
 
             <c:if test="${not empty error}">
                 <div class="alert alert-error" style="margin-top: 16px;">

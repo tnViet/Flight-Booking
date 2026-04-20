@@ -6,6 +6,7 @@ public class Aircraft {
     private int totalRows;
     private int columnsPerRow;
     private String columnNames; // Comma separated: A,B,C,D
+    private String missingSeats; // Comma separated: 10A,10B
 
     public int getId() {
         return id;
@@ -45,6 +46,14 @@ public class Aircraft {
 
     public void setColumnNames(String columnNames) {
         this.columnNames = columnNames;
+    }
+
+    public String getMissingSeats() {
+        return missingSeats;
+    }
+
+    public void setMissingSeats(String missingSeats) {
+        this.missingSeats = missingSeats;
     }
 
     public String[] getColumnList() {

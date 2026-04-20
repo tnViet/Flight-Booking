@@ -192,6 +192,18 @@ public class BookingDAO {
     }
 
     public List<BookingItem> findByBookingCode(String code) throws SQLException {
+        return findByCriteria("b.booking_code = ?", code);
+    }
+
+    public List<BookingItem> findByPhone(String phone) throws SQLException {
+        return findByCriteria("bp.phone = ?", phone);
+    }
+
+    public List<BookingItem> findByIdCard(String idCard) throws SQLException {
+        return findByCriteria("bp.id_card = ?", idCard);
+    }
+
+    private List<BookingItem> findByCriteria(String condition, String value) throws SQLException {
         List<BookingItem> items = new ArrayList<>();
         String sql = """
                 SELECT b.booking_code, 
@@ -211,12 +223,12 @@ public class BookingDAO {
                 JOIN flights f ON f.id = b.flight_id
                 JOIN booking_seats bs ON bs.booking_id = b.id
                 JOIN booking_passengers bp ON bp.id = bs.passenger_id
-                WHERE b.booking_code = ?
+                WHERE """ + condition + """
                 GROUP BY b.id
                 """;
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, code);
+            ps.setString(1, value);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     BookingItem item = new BookingItem();
