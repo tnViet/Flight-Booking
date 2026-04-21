@@ -1,0 +1,66 @@
+package com.flightbooking.model;
+
+public class Aircraft {
+    private int id;
+    private String modelName;
+    private int totalRows;
+    private int columnsPerRow;
+    private String columnNames; // Comma separated: A,B,C,D
+    private String missingSeats; // Comma separated: 10A,10B
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public int getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(int totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public int getColumnsPerRow() {
+        return columnsPerRow;
+    }
+
+    public void setColumnsPerRow(int columnsPerRow) {
+        this.columnsPerRow = columnsPerRow;
+    }
+
+    public String getColumnNames() {
+        return columnNames;
+    }
+
+    public void setColumnNames(String columnNames) {
+        this.columnNames = columnNames;
+    }
+
+    public String getMissingSeats() {
+        return missingSeats;
+    }
+
+    public void setMissingSeats(String missingSeats) {
+        this.missingSeats = missingSeats;
+    }
+
+    public String[] getColumnList() {
+        if (columnNames == null) return new String[0];
+        return java.util.Arrays.stream(columnNames.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
+    }
+}

@@ -1,0 +1,80 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${empty pageTitle ? "Flight Booking" : pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="${pageContext.request.contextPath}/home" class="logo-text">
+                <div class="logo-icon"><i class="fas fa-plane"></i></div>
+                <span>VietAir</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <c:choose>
+                <c:when test="${sessionScope.user != null && sessionScope.user.role == 'ADMIN'}">
+                    <div class="nav-section-label">Quản trị</div>
+                    <a href="${pageContext.request.contextPath}/home" class="nav-item">
+                        <i class="fas fa-chart-line"></i> <span>Bảng điều khiển</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/flights" class="nav-item">
+                        <i class="fas fa-plane"></i> <span>Quản lý chuyến bay</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/aircrafts" class="nav-item">
+                        <i class="fas fa-tools"></i> <span>Quản lý máy bay</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/admin/bookings" class="nav-item">
+                        <i class="fas fa-list"></i> <span>Quản lý đặt chỗ</span>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <div class="nav-section-label">Điều hướng</div>
+                    <a href="${pageContext.request.contextPath}/home" class="nav-item ${pageContext.request.requestURI.endsWith('index.jsp') ? 'active' : ''}">
+                        <i class="fas fa-home"></i> <span>Trang chủ</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/flights" class="nav-item">
+                        <i class="fas fa-plane-departure"></i> <span>Mua vé</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/lookup-seat" class="nav-item">
+                        <i class="fas fa-search"></i> <span>Tra cứu chỗ ngồi</span>
+                    </a>
+                    <c:if test="${sessionScope.user != null}">
+                        <a href="${pageContext.request.contextPath}/my-bookings" class="nav-item">
+                            <i class="fas fa-ticket-alt"></i> <span>Lịch sử đặt</span>
+                        </a>
+                    </c:if>
+                </c:otherwise>
+            </c:choose>
+        </nav>
+        <div class="sidebar-footer">
+            <c:choose>
+                <c:when test="${sessionScope.user == null}">
+                    <a href="${pageContext.request.contextPath}/auth" class="nav-item">
+                        <i class="fas fa-sign-in-alt"></i> <span>Đăng nhập</span>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <div class="user-badge">
+                        <div class="user-avatar"><i class="fas fa-user"></i></div>
+                        <span class="user-name">${sessionScope.user.fullName}</span>
+                    </div>
+                    <a href="${pageContext.request.contextPath}/logout" class="nav-item">
+                        <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                    </a>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </aside>
+    <main class="main-content">

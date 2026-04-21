@@ -1,0 +1,10 @@
+    <footer class="app-footer">
+        <p></p>
+    </footer>
+    </main>
+</div>
+<c:if test="${not empty pageScript}">
+    <script src="${pageContext.request.contextPath}/assets/js/${pageScript}"></script>
+</c:if>
+</body>
+</html>
