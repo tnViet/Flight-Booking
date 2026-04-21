@@ -57,6 +57,10 @@ public class Aircraft {
     }
 
     public String[] getColumnList() {
-        return columnNames != null ? columnNames.split(",") : new String[0];
+        if (columnNames == null) return new String[0];
+        return java.util.Arrays.stream(columnNames.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
     }
 }

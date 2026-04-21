@@ -88,43 +88,34 @@
 
                 <style>
                     .seat-grid-container {
-                        grid-template-columns: repeat(${flight.aircraft.columnsPerRow}, 36px);
+                        display: grid;
+                        grid-template-columns: repeat(${flight.aircraft.columnsPerRow}, minmax(36px, 40px));
                         gap: 8px;
-                        max-width: ${flight.aircraft.columnsPerRow * 44}px;
-                        margin: 0 auto;
                         justify-content: center;
+                        margin: 0 auto 30px;
+                        padding: 10px;
+                        background: #f8fafc;
+                        border-radius: var(--radius-md);
+                        width: fit-content;
                     }
                 </style>
 
-                <div class="seat-grid-container" style="display: grid; grid-template-columns: repeat(${flight.aircraft.columnsPerRow}, 36px); gap: 10px; justify-content: center; margin: 0 auto 30px;">
+                <div class="seat-grid-container">
                     <c:forEach var="s" items="${allSeats}" varStatus="st">
                         <c:set var="booked" value="${bookedSeats.contains(s.seatNo())}" />
                         
-                        <%-- Find current row and column based on seatNo like "1A", "10C" --%>
                         <c:set var="seatNo" value="${s.seatNo()}" />
-                        <c:set var="rowStr" value="${seatNo.substring(0, seatNo.length() - 1)}" />
+                        <%-- Row is all characters except the last one, Column is the last character --%>
+                        <c:set var="rowNum" value="${seatNo.substring(0, seatNo.length() - 1)}" />
                         <c:set var="colChar" value="${seatNo.substring(seatNo.length() - 1)}" />
-                        
-                        <%-- Logic for aisle placement --%>
-                        <c:set var="isAisle" value="false" />
+
+                        <%-- Find column index --%>
+                        <c:set var="colIdx" value="1" />
                         <c:forEach var="c" items="${flight.aircraft.columnList}" varStatus="cst">
                             <c:if test="${c == colChar}">
                                 <c:set var="colIdx" value="${cst.index + 1}" />
                             </c:if>
                         </c:forEach>
-                        
-                        <c:if test="${flight.aircraft.columnsPerRow == 6 && colIdx == 3}">
-                            <c:set var="isAisle" value="true" />
-                        </c:if>
-                        <c:if test="${flight.aircraft.columnsPerRow == 7 && (colIdx == 2 || colIdx == 5)}">
-                            <c:set var="isAisle" value="true" />
-                        </c:if>
-                        <c:if test="${flight.aircraft.columnsPerRow == 8 && (colIdx == 2 || colIdx == 6)}">
-                            <c:set var="isAisle" value="true" />
-                        </c:if>
-                        <c:if test="${flight.aircraft.columnsPerRow == 9 && (colIdx == 3 || colIdx == 6)}">
-                            <c:set var="isAisle" value="true" />
-                        </c:if>
 
                         <div class="seat-box
                             ${s.seatClass() == 'THUONG_GIA' ? 'thuonggia' : ''}
@@ -133,7 +124,7 @@
                             ${booked ? 'booked' : ''}"
                             data-seat-no="${s.seatNo()}"
                             data-multiplier="${s.multiplier()}"
-                            style="grid-row: ${rowStr}; grid-column: ${colIdx}; ${isAisle ? 'margin-right: 20px;' : ''}"
+                            style="grid-row: ${rowNum}; grid-column: ${colIdx};"
                             onclick="toggleSeatSelection(this)">
                             ${s.seatNo()}
                         </div>

@@ -91,6 +91,13 @@ public class PaymentServlet extends HttpServlet {
         if ("repay".equals(action)) {
             String bookingCode = req.getParameter("bookingCode");
             try {
+                // Check if booking is still valid (not cancelled)
+                var bookings = bookingDAO.findByBookingCode(bookingCode);
+                if (bookings.isEmpty() || "CANCELLED".equalsIgnoreCase(bookings.get(0).getBookingStatus())) {
+                    resp.sendRedirect(req.getContextPath() + "/lookup-seat?error=Booking has been cancelled due to timeout.");
+                    return;
+                }
+
                 if ("FAILED".equalsIgnoreCase(simulateStatus)) {
                     resp.sendRedirect(req.getContextPath() + "/payment?bookingCode=" + bookingCode + "&error=Thanh toán thất bại. Vui lòng thử lại.");
                     return;

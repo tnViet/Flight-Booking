@@ -35,8 +35,7 @@ public class ReceiptDownloadServlet extends HttpServlet {
             resp.setHeader("Content-Disposition", "attachment; filename=Receipt_" + bookingCode + ".txt");
 
             try (PrintWriter out = resp.getWriter()) {
-                out.println("========================================");
-                out.println("          VIETNAM AIRLINES RECEIPT      ");
+       
                 out.println("========================================");
                 out.println("Mã đặt chỗ:    " + b.getBookingCode());
                 out.println("Trạng thái:    " + b.getBookingStatus());
@@ -54,9 +53,7 @@ public class ReceiptDownloadServlet extends HttpServlet {
                 out.println("Chi tiết:      " + b.getPaymentMethod());
                 out.printf("TỔNG TIỀN:     %,.0f VND%n", b.getSeatPrice());
                 out.println("========================================");
-                out.println("   Cảm ơn quý khách đã tin tưởng và");
-                out.println("      sử dụng dịch vụ của chúng tôi!");
-                out.println("========================================");
+
             }
         } catch (Exception e) {
             throw new ServletException(e);

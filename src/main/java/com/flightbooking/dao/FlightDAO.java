@@ -14,7 +14,7 @@ import java.util.List;
 public class FlightDAO {
     private static final String SELECT_JOIN_AIRCRAFT = """
             SELECT f.id, f.flight_no, f.origin, f.destination, f.departure_time, f.arrival_time, f.base_price, f.total_seats,
-                   a.id as a_id, a.model_name, a.total_rows, a.columns_per_row, a.column_names
+                   a.id as a_id, a.model_name, a.total_rows, a.columns_per_row, a.column_names, a.missing_seats
             FROM flights f
             LEFT JOIN aircrafts a ON f.aircraft_id = a.id
             """;
@@ -170,6 +170,7 @@ public class FlightDAO {
             a.setTotalRows(rs.getInt("total_rows"));
             a.setColumnsPerRow(rs.getInt("columns_per_row"));
             a.setColumnNames(rs.getString("column_names"));
+            a.setMissingSeats(rs.getString("missing_seats"));
             flight.setAircraft(a);
         }
         return flight;

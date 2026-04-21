@@ -49,6 +49,29 @@ public class BookingDAO {
             try {
                 double total = 0;
                 int bookingId;
+                
+                // 1. Double-check seat availability before creating the booking
+                String sqlCheck = """
+                    SELECT bs.seat_no FROM booking_seats bs
+                    JOIN bookings b ON b.id = bs.booking_id
+                    WHERE bs.flight_id = ? AND bs.seat_no IN (
+                """ + String.join(",", java.util.Collections.nCopies(seatNos.length, "?")) + ") " + """
+                    AND (b.status = 'CONFIRMED' 
+                         OR (b.status = 'PENDING_PAYMENT' AND b.booking_time > NOW() - INTERVAL 2 MINUTE)
+                         OR b.status = 'PROCESSING')
+                """;
+                try (PreparedStatement ps = con.prepareStatement(sqlCheck)) {
+                    ps.setInt(1, flightId);
+                    for (int i = 0; i < seatNos.length; i++) {
+                        ps.setString(i + 2, seatNos[i]);
+                    }
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            throw new SQLException("Seat " + rs.getString("seat_no") + " is already booked.");
+                        }
+                    }
+                }
+
                 String sqlBooking = "INSERT INTO bookings(user_id, flight_id, booking_code, total_price, payment_method, status) VALUES (?, ?, ?, 0, ?, 'PROCESSING')";
                 try (PreparedStatement ps = con.prepareStatement(sqlBooking, Statement.RETURN_GENERATED_KEYS)) {
                     if (userId == null) {
@@ -205,27 +228,26 @@ public class BookingDAO {
 
     private List<BookingItem> findByCriteria(String condition, String value) throws SQLException {
         List<BookingItem> items = new ArrayList<>();
-        String sql = """
-                SELECT b.booking_code, 
-                       DATE_FORMAT(b.booking_time, '%d/%m/%Y %H:%i') booking_time, 
-                       DATE_FORMAT(f.departure_time, '%d/%m/%Y %H:%i') departure_time,
-                       b.status,
-                       b.payment_method,
-                       f.flight_no, 
-                       CONCAT(f.origin, ' -> ', f.destination) route,
-                       GROUP_CONCAT(bs.seat_no SEPARATOR ', ') AS seats,
-                       GROUP_CONCAT(bs.seat_class SEPARATOR ', ') AS seat_classes,
-                       SUM(bs.seat_price + bs.luggage_price) AS total_price,
-                       GROUP_CONCAT(bp.full_name SEPARATOR ', ') AS passenger_names,
-                       GROUP_CONCAT(CONCAT(bp.full_name, ' (CCCD: ', bp.id_card, ', SĐT: ', bp.phone, ', Email: ', bp.email, ')') SEPARATOR '\\n') AS detailed_passengers,
-                       GROUP_CONCAT(CONCAT(bs.seat_no, ': ', bs.luggage_weight, 'kg') SEPARATOR ', ') AS luggage_details
-                FROM bookings b
-                JOIN flights f ON f.id = b.flight_id
-                JOIN booking_seats bs ON bs.booking_id = b.id
-                JOIN booking_passengers bp ON bp.id = bs.passenger_id
-                WHERE """ + condition + """
-                GROUP BY b.id
-                """;
+        String sql = "SELECT b.booking_code, " +
+                "DATE_FORMAT(b.booking_time, '%d/%m/%Y %H:%i') booking_time, " +
+                "DATE_FORMAT(f.departure_time, '%d/%m/%Y %H:%i') departure_time, " +
+                "b.status, " +
+                "b.payment_method, " +
+                "f.flight_no, " +
+                "CONCAT(f.origin, ' -> ', f.destination) route, " +
+                "GROUP_CONCAT(bs.seat_no SEPARATOR ', ') AS seats, " +
+                "GROUP_CONCAT(bs.seat_class SEPARATOR ', ') AS seat_classes, " +
+                "SUM(bs.seat_price + bs.luggage_price) AS total_price, " +
+                "GROUP_CONCAT(bp.full_name SEPARATOR ', ') AS passenger_names, " +
+                "GROUP_CONCAT(CONCAT(bp.full_name, ' (CCCD: ', bp.id_card, ', SĐT: ', bp.phone, ', Email: ', bp.email, ')') SEPARATOR '\n') AS detailed_passengers, " +
+                "GROUP_CONCAT(CONCAT(bs.seat_no, ': ', bs.luggage_weight, 'kg') SEPARATOR ', ') AS luggage_details " +
+                "FROM bookings b " +
+                "JOIN flights f ON f.id = b.flight_id " +
+                "JOIN booking_seats bs ON bs.booking_id = b.id " +
+                "JOIN booking_passengers bp ON bp.id = bs.passenger_id " +
+                "WHERE " + condition + " " +
+                "GROUP BY b.id " +
+                "ORDER BY b.booking_time DESC";
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, value);

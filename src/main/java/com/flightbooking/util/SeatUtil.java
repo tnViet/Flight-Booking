@@ -19,17 +19,18 @@ public class SeatUtil {
         String[] cols = aircraft.getColumnList();
         int totalRows = aircraft.getTotalRows();
         
-        // Missing seats set for quick lookup
+        // Missing seats set for quick lookup (normalized to uppercase)
         Set<String> missing = aircraft.getMissingSeats() != null 
             ? Arrays.stream(aircraft.getMissingSeats().split(","))
                     .map(String::trim)
+                    .map(String::toUpperCase)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toSet())
             : Set.of();
 
         for (int row = 1; row <= totalRows; row++) {
             for (String col : cols) {
-                String no = row + col.trim();
+                String no = (row + col.trim()).toUpperCase();
                 
                 // Skip if seat is marked as missing
                 if (missing.contains(no)) continue;

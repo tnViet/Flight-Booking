@@ -62,53 +62,55 @@
 <div class="section-container" style="position: relative; padding: 0 48px 48px;">
     <h2 class="section-title">Chuyến bay giá tốt</h2>
     
-    <div class="carousel-container" style="position: relative; overflow: hidden;">
-        <button id="prevBtn" class="carousel-nav" style="left: 0;">
+    <div class="carousel-container" style="position: relative; padding: 10px 0;">
+        <button id="prevBtn" class="carousel-nav" style="left: -20px;">
             <i class="fas fa-chevron-left"></i>
         </button>
         
-        <div class="flights-grid carousel-track" id="carouselTrack" style="display: flex; transition: transform 0.4s ease; gap: 24px; width: fit-content;">
-            <c:forEach items="${deals}" var="f">
-                <div class="flight-card" style="flex: 0 0 calc((100% / 3) - 16px); min-width: 300px;">
-                    <div class="flight-header">
-                        <span class="route">
-                            ${f.origin} <i class="fas fa-long-arrow-alt-right"></i> ${f.destination}
-                        </span>
-                        <span class="flight-number">${f.flightNo}</span>
-                    </div>
-                    <div class="flight-body">
-                        <div class="flight-info">
-                            <div class="time-box">
-                                <div class="time">${f.departureTimeDisplay}</div>
-                                <div class="city">${f.origin}</div>
-                            </div>
-                            <div class="flight-info-divider">
-                                <div class="flight-info-line"></div>
-                                <i class="fas fa-plane"></i>
-                                <div class="flight-info-line"></div>
-                            </div>
-                            <div class="time-box" style="text-align: right;">
-                                <div class="time">${f.arrivalTimeDisplay}</div>
-                                <div class="city">${f.destination}</div>
-                            </div>
+        <div class="carousel-viewport" style="overflow: hidden; width: 100%;">
+            <div class="flights-grid carousel-track" id="carouselTrack" style="display: flex; transition: transform 0.4s ease-out; gap: 24px; padding: 0;">
+                <c:forEach items="${deals}" var="f">
+                    <div class="flight-card" style="flex: 0 0 calc((100% - 72px) / 4); min-width: 240px; margin-bottom: 5px;">
+                        <div class="flight-header">
+                            <span class="route">
+                                ${f.origin} <i class="fas fa-long-arrow-alt-right"></i> ${f.destination}
+                            </span>
+                            <span class="flight-number">${f.flightNo}</span>
                         </div>
-                        <div class="price-box">
-                            <div>
-                                <div class="label">Giá chỉ từ</div>
-                                <div class="value">
-                                    <fmt:formatNumber value="${f.basePrice}" type="currency" currencySymbol="₫" />
+                        <div class="flight-body">
+                            <div class="flight-info">
+                                <div class="time-box">
+                                    <div class="time">${f.departureTimeDisplay}</div>
+                                    <div class="city">${f.origin}</div>
+                                </div>
+                                <div class="flight-info-divider">
+                                    <div class="flight-info-line"></div>
+                                    <i class="fas fa-plane"></i>
+                                    <div class="flight-info-line"></div>
+                                </div>
+                                <div class="time-box" style="text-align: right;">
+                                    <div class="time">${f.arrivalTimeDisplay}</div>
+                                    <div class="city">${f.destination}</div>
+                                </div>
+                            </div>
+                            <div class="price-box">
+                                <div>
+                                    <div class="label">Giá chỉ từ</div>
+                                    <div class="value">
+                                        <fmt:formatNumber value="${f.basePrice}" type="currency" currencySymbol="₫" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <a href="${pageContext.request.contextPath}/booking?flightId=${f.id}" class="book-btn">
+                            Đặt ngay <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
-                    <a href="${pageContext.request.contextPath}/booking?flightId=${f.id}" class="book-btn">
-                        Đặt ngay <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
         
-        <button id="nextBtn" class="carousel-nav" style="right: 0;">
+        <button id="nextBtn" class="carousel-nav" style="right: -20px;">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>
@@ -152,15 +154,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     
     let currentIndex = 0;
-    const cardsToShow = 3;
     const totalCards = cards.length;
     
     function updateCarousel() {
-        const cardWidth = cards[0].offsetWidth + 24; // Width + gap
-        track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+        if (cards.length === 0) return;
         
-        prevBtn.disabled = currentIndex === 0;
-        nextBtn.disabled = currentIndex >= totalCards - cardsToShow;
+        // Determine how many cards are actually visible based on container width
+        const viewportWidth = track.parentElement.offsetWidth;
+        const cardWidth = cards[0].offsetWidth;
+        const gap = 24;
+        const cardsToShow = Math.floor((viewportWidth + gap) / (cardWidth + gap));
+        
+        const moveAmount = currentIndex * (cardWidth + gap);
+        track.style.transform = `translateX(-${moveAmount}px)`;
+        
+        prevBtn.style.opacity = currentIndex === 0 ? "0.3" : "1";
+        prevBtn.style.pointerEvents = currentIndex === 0 ? "none" : "auto";
+        
+        nextBtn.style.opacity = currentIndex >= totalCards - cardsToShow ? "0.3" : "1";
+        nextBtn.style.pointerEvents = currentIndex >= totalCards - cardsToShow ? "none" : "auto";
     }
     
     prevBtn.addEventListener('click', () => {
@@ -171,6 +183,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     nextBtn.addEventListener('click', () => {
+        // Determine how many cards are visible
+        const viewportWidth = track.parentElement.offsetWidth;
+        const cardWidth = cards[0].offsetWidth;
+        const gap = 24;
+        const cardsToShow = Math.floor((viewportWidth + gap) / (cardWidth + gap));
+        
         if (currentIndex < totalCards - cardsToShow) {
             currentIndex++;
             updateCarousel();

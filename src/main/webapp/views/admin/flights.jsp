@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="pageTitle" value="Quản lý chuyến bay - Admin" />
 <c:set var="pageScript" value="admin/flights.js" />
 <%@ include file="../common/header.jspf" %>
@@ -63,7 +64,13 @@
                         <select name="aircraftId" required onchange="updateTotalSeats(this)">
                             <option value="">-- Chọn máy bay --</option>
                             <c:forEach var="a" items="${aircrafts}">
-                                <option value="${a.id}" data-seats="${a.totalRows * a.columnsPerRow}">${a.modelName} (${a.totalRows * a.columnsPerRow} ghế)</option>
+                                <c:set var="missingCount" value="0" />
+                                <c:if test="${not empty a.missingSeats}">
+                                    <c:set var="missingCount" value="${fn:length(fn:split(a.missingSeats, ','))}" />
+                                </c:if>
+                                <option value="${a.id}" data-seats="${(a.totalRows * a.columnsPerRow) - missingCount}">
+                                    ${a.modelName} (${(a.totalRows * a.columnsPerRow) - missingCount} ghế)
+                                </option>
                             </c:forEach>
                         </select>
                     </div>

@@ -75,8 +75,7 @@ CREATE TABLE IF NOT EXISTS booking_seats (
   luggage_price DECIMAL(12,2) NOT NULL DEFAULT 0,
   CONSTRAINT fk_bs_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
   CONSTRAINT fk_bs_passenger FOREIGN KEY (passenger_id) REFERENCES booking_passengers(id) ON DELETE CASCADE,
-  CONSTRAINT fk_bs_flight FOREIGN KEY (flight_id) REFERENCES flights(id) ON DELETE CASCADE,
-  UNIQUE KEY uq_flight_seat (flight_id, seat_no)
+  CONSTRAINT fk_bs_flight FOREIGN KEY (flight_id) REFERENCES flights(id) ON DELETE CASCADE
 );
 
 

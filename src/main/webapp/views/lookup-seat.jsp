@@ -136,6 +136,11 @@
                                     <i class="fas fa-clock" style="margin-right: 4px;"></i> Chờ thanh toán
                                 </span>
                             </c:when>
+                            <c:when test="${b.bookingStatus == 'CANCELLED'}">
+                                <span class="badge badge-danger" style="font-size: 0.8rem; padding: 5px 14px;">
+                                    <i class="fas fa-times-circle" style="margin-right: 4px;"></i> Đã hủy
+                                </span>
+                            </c:when>
                             <c:otherwise>
                                 <span class="badge badge-danger" style="font-size: 0.8rem; padding: 5px 14px;">
                                     ${b.bookingStatus}
@@ -184,7 +189,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="font-weight: 500;">${b.passengerName}</td>
+                                <td style="font-weight: 500; white-space: pre-line;">${b.passengerName}</td>
                                 <td style="color: var(--theme_text-secondary);">${b.seatClass}</td>
                                 <td style="text-align:center;">
                                     <span class="badge badge-blue" style="font-family: monospace; font-size: 0.9rem; font-weight: 700; padding: 4px 14px; letter-spacing: 0.5px;">

@@ -20,12 +20,8 @@
                 <thead>
                     <tr>
                         <th>Mã đặt chỗ</th>
-                        <th>Chuyến bay</th>
                         <th>Khởi hành</th>
                         <th>Tuyến</th>
-                        <th>Hành khách</th>
-                        <th>Ghế</th>
-                        <th>Hạng</th>
                         <th>Giá</th>
                         <th>Thời gian đặt</th>
                         <th>Trạng thái</th>
@@ -39,16 +35,8 @@
                                     ${b.bookingCode}
                                 </span>
                             </td>
-                            <td style="font-weight: 500;">${b.flightNo}</td>
                             <td style="font-weight: 600; color: var(--theme_blue); font-size: 0.85rem;">${b.departureTime}</td>
                             <td style="color: var(--theme_text-secondary);">${b.route}</td>
-                            <td style="font-weight: 500;">${b.passengerName}</td>
-                            <td>
-                                <span class="badge badge-blue" style="font-family: monospace; letter-spacing: 0.5px;">
-                                    ${b.seatNo}
-                                </span>
-                            </td>
-                            <td style="color: var(--theme_text-secondary); font-size: 0.82rem;">${b.seatClass}</td>
                             <td style="font-weight: 600; color: var(--theme_text-primary);">
                                 <fmt:formatNumber value="${b.seatPrice}" type="currency" currencySymbol="₫" />
                             </td>
@@ -60,6 +48,9 @@
                                     </c:when>
                                     <c:when test="${b.bookingStatus == 'PENDING_PAYMENT'}">
                                         <span class="badge badge-warning">Chờ thanh toán</span>
+                                    </c:when>
+                                    <c:when test="${b.bookingStatus == 'CANCELLED'}">
+                                        <span class="badge badge-danger">Đã hủy</span>
                                     </c:when>
                                     <c:when test="${b.bookingStatus == 'PROCESSING' || b.bookingStatus == 'PENDING'}">
                                         <span class="badge badge-blue">Đang xử lý</span>
